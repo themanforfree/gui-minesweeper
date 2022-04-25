@@ -1,0 +1,18 @@
+[package]
+name = "minesweeper"
+version = "0.1.0"
+authors = ["themanforfree <themanforfree@gmail.com>"]
+edition = "2018"
+build = "build.rs"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+
+[dependencies]
+slint = "0.2"
+gamie = { version = "0.8", features = ["minesweeper"] }
+rand = "0.8"
+
+
+[build-dependencies]
+slint-build = "0.2"

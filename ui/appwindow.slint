@@ -1,0 +1,77 @@
+
+struct BoxData := {
+    is_mine: bool,
+    mine_adjacent: int,
+    is_revealed: bool,
+    is_flagged: bool,
+}
+Box := Rectangle{
+    callback clicked;
+    
+    property <bool> is_mine;
+    property <int> mine_adjacent;
+    property <bool> is_revealed;
+    property <bool> is_flagged;
+    property <bool> is_ended;
+    property <bool> is_exploded;
+
+    background: is_exploded ? red : is_ended || is_revealed ? #ff80ab : #ddd;
+    width: 30px;
+    height: 30px;    
+
+
+    Text {  
+        text: is_flagged ? "🚩" : is_revealed || is_ended ? is_mine ? "💣" : mine_adjacent : "";
+        font_size: 20px;
+        color: is_mine ? black : white;
+
+        width: parent.width;
+        height: parent.height;
+        horizontal_alignment: center;
+        vertical_alignment: center;
+    }
+
+    drop-shadow-color: self.background;
+    drop-shadow-blur: 5px;
+    drop-shadow-offset-x: 2px;
+    drop-shadow-offset-y: 2px;
+
+    TouchArea { 
+        clicked => {  
+            root.clicked();
+        }
+        mouse_cursor: pointer;
+        
+    }
+}
+
+export AppWindow := Window {
+    title: "MineSweeper";
+    property <bool> is_ended;
+    property <int> rows : 8;
+    property <int> cols : 8;
+    property <[BoxData]> boxes: [];
+
+    callback click(int, int) -> bool;
+    
+    VerticalLayout { 
+        spacing: 5px;
+        for i in root.rows: HorizontalLayout{
+            spacing: 5px;
+            for j in root.cols: Box { 
+                is_mine: root.boxes[i*root.cols+j].is_mine;
+                mine_adjacent: root.boxes[i*root.cols+j].mine_adjacent;
+                is_revealed: root.boxes[i*root.cols+j].is_revealed;
+                is_flagged: root.boxes[i*root.cols+j].is_flagged;
+                is_ended: root.is_ended;
+                clicked => {  
+                    if (!root.is_ended) {
+                        if (root.click(i, j)) {
+                            self.is_exploded = true;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
